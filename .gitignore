@@ -1,0 +1,12 @@
+# Dependencies
+node_modules/
+server/node_modules/
+client/node_modules/
+
+# Environment variables (ความลับ)
+.env
+server/.env
+
+# System files
+.DS_Store
+dist/
