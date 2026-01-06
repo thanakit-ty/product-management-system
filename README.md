@@ -37,5 +37,8 @@ Make sure you have installed:
 
 ### 1. Clone the repository
 ```bash
-git clone [https://github.com/YOUR_USERNAME/product-management-system.git](https://github.com/YOUR_USERNAME/product-management-system.git)
+git clone [https://github.com/thanakit-ty/product-management-system.git](https://github.com/thanakit-ty/product-management-system.git)
 cd product-management-system
+
+client : npm run dev
+server : npx nodemon app.js
