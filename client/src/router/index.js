@@ -1,17 +1,39 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import ProductList from '../views/ProductList.vue'
-import ProductForm from '../views/ProductForm.vue'
-import CategoryList from '../views/CategoryList.vue' // สร้างไฟล์นี้ทีหลังก็ได้
+import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "../stores/auth";
+
+const routes = [
+  {
+    path: "/login",
+    name: "login",
+    component: () => import("../views/LoginView.vue"),
+  },
+  {
+    path: "/register",
+    name: "register",
+    component: () => import("../views/RegisterView.vue"),
+  },
+  {
+    path: "/",
+    name: "dashboard",
+    meta: { requiresAuth: true },
+    component: () => import("../views/DashboardView.vue"),
+  },
+];
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    { path: '/', redirect: '/products' },
-    { path: '/products', component: ProductList },
-    { path: '/product/add', component: ProductForm },
-    { path: '/product/edit/:id', component: ProductForm },
-    { path: '/categories', component: CategoryList } 
-  ]
-})
+  history: createWebHistory(),
+  routes,
+});
 
-export default router
+router.beforeEach(async (to) => {
+  const auth = useAuthStore();
+
+  if (to.meta.requiresAuth && !auth.isAuthed) {
+    return { name: "login", query: { redirect: to.fullPath } };
+  }
+  if ((to.name === "login" || to.name === "register") && auth.isAuthed) {
+    return { name: "dashboard" };
+  }
+});
+
+export default router;

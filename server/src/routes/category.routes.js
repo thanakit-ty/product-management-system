@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 // Import Controller เพื่อเอามาใช้ในหน้านี้
-const categoryController = require('../controllers/category.controller');
+const categoryController = require('../../controllers/category.controller');
 
 // กำหนดเส้นทาง (Routes)
 router.get('/categories', categoryController.getCategories);

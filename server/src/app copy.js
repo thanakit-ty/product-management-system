@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 require('dotenv').config();
 
 // Controllers (เอา product ไว้เหมือนเดิม ส่วน category ไม่ต้อง import controller ที่นี่แล้ว)
-const productController = require('./controllers/product.controller');
+const productController = require('../controllers/product.controller');
 
 // --- 1. Import Route ไฟล์ใหม่ที่แยกไว้ ---
 const categoryRoutes = require('./routes/category.routes'); 
