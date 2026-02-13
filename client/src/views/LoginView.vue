@@ -7,7 +7,7 @@
             <header class="header">
                 <div class="logo" aria-hidden="true">PM</div>
                 <div>
-                    <h1 class="title">Welcome back</h1>
+                    <h1 class="title">Access Your Account</h1>
                     <p class="subtitle">Sign in to Product Management System</p>
                 </div>
             </header>
@@ -18,7 +18,7 @@
                     <div class="inputWrap">
                         <span class="icon" aria-hidden="true">✉️</span>
                         <input id="email" v-model.trim="email" class="input" type="email" inputmode="email"
-                            autocomplete="email" placeholder="you@company.com" required :disabled="auth.loading" />
+                            autocomplete="email" placeholder="you@email.com" required :disabled="auth.loading" />
                     </div>
                 </div>
 
