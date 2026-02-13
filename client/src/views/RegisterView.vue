@@ -27,10 +27,9 @@
                     <div class="inputWrap">
                         <span class="icon" aria-hidden="true">✉️</span>
                         <input id="email" v-model.trim="email" class="input" type="email" inputmode="email"
-                            autocomplete="email" placeholder="you@company.com" required :disabled="auth.loading" />
+                            autocomplete="email" placeholder="you@email.com" required :disabled="auth.loading" />
                     </div>
                 </div>
-
                 <div class="field">
                     <label class="label" for="password">Password</label>
                     <div class="inputWrap">
