@@ -1,4 +1,4 @@
-const Category = require('../models/Category');
+const Category = require('../src/models/Category');
 
 exports.getAll = async () => {
     return await Category.find().sort({ createdAt: -1 });

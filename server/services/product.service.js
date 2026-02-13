@@ -1,4 +1,4 @@
-const Product = require('../models/Product');
+const Product = require('../src/models/Product');
 
 exports.getAll = async (page = 1, limit = 10, search = '') => {
   const query = search ? { name: { $regex: search, $options: 'i' } } : {};
