@@ -8,6 +8,11 @@ const routes = [
     component: () => import("../views/LoginView.vue"),
   },
   {
+    path: "/register",
+    name: "register",
+    component: () => import("../views/RegisterView.vue"),
+  },
+  {
     path: "/",
     name: "dashboard",
     meta: { requiresAuth: true },
@@ -26,7 +31,7 @@ router.beforeEach(async (to) => {
   if (to.meta.requiresAuth && !auth.isAuthed) {
     return { name: "login", query: { redirect: to.fullPath } };
   }
-  if (to.name === "login" && auth.isAuthed) {
+  if ((to.name === "login" || to.name === "register") && auth.isAuthed) {
     return { name: "dashboard" };
   }
 });

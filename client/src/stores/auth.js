@@ -28,6 +28,33 @@ export const useAuthStore = defineStore("auth", {
         this.loading = false;
       }
     },
+    async register({ email, password, name }) {
+      this.loading = true;
+      this.error = "";
+      try {
+        const { data } = await http.post("/auth/register", {
+          email,
+          password,
+          name,
+        });
+
+        // ✅ ถ้า server ส่ง accessToken กลับมา => auto-login
+        if (data?.accessToken) {
+          this.accessToken = data.accessToken;
+          this.user = data.user;
+          localStorage.setItem("accessToken", this.accessToken);
+          localStorage.setItem("user", JSON.stringify(this.user));
+        }
+
+        // ✅ ถ้า server ไม่ส่ง token => ให้ caller ไป login ต่อเอง
+        return data;
+      } catch (e) {
+        this.error = e?.response?.data?.message || "Register failed";
+        throw e;
+      } finally {
+        this.loading = false;
+      }
+    },
     logout() {
       this.accessToken = "";
       this.user = null;
