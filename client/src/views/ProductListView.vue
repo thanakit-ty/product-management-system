@@ -34,12 +34,12 @@
                     </div>
 
                     <div class="md:col-span-3">
-                        <label class="block text-xs font-semibold text-slate-700">Category</label>
+                        <label class="block text-xs font-semibold text-slate-700">Client</label>
                         <select
                             v-model="filters.category"
                             class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
                         >
-                            <option value="">All categories</option>
+                            <option value="">All clients</option>
                             <option v-for="c in categoryOptions" :key="c" :value="c">{{ c }}</option>
                         </select>
                     </div>
@@ -51,8 +51,10 @@
                             class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
                         >
                             <option value="">All</option>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
+                            <option value="received">Received</option>
+                            <option value="in_progress">In progress</option>
+                            <option value="problem">Problem</option>
+                            <option value="done">Done</option>
                         </select>
                     </div>
 
@@ -96,17 +98,11 @@
                                     </button>
                                 </th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">SKU</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Category</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Client</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">
                                     <button type="button" class="inline-flex items-center gap-1 hover:text-slate-900" @click="toggleSort('price')">
                                         Price
                                         <SortIndicator :active="sort.key === 'price'" :dir="sort.dir" />
-                                    </button>
-                                </th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">
-                                    <button type="button" class="inline-flex items-center gap-1 hover:text-slate-900" @click="toggleSort('stock')">
-                                        Stock
-                                        <SortIndicator :active="sort.key === 'stock'" :dir="sort.dir" />
                                     </button>
                                 </th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Status</th>
@@ -165,17 +161,12 @@
                                 <td class="whitespace-nowrap px-4 py-3 text-sm text-slate-700">
                                     {{ formatCurrency(p.price) }}
                                 </td>
-                                <td class="whitespace-nowrap px-4 py-3 text-sm" :class="p.stock < 5 ? 'text-red-600 font-semibold' : 'text-slate-700'">
-                                    {{ p.stock }}
-                                </td>
                                 <td class="whitespace-nowrap px-4 py-3 text-sm">
                                     <span
                                         class="inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold"
-                                        :class="p.status === 'active'
-                                            ? 'bg-green-50 text-green-700 ring-1 ring-inset ring-green-200'
-                                            : 'bg-slate-100 text-slate-700 ring-1 ring-inset ring-slate-200'"
+                                        :class="statusUi(p.status).class"
                                     >
-                                        {{ p.status === 'active' ? 'Active' : 'Inactive' }}
+                                        {{ statusUi(p.status).label }}
                                     </span>
                                 </td>
                                 <td class="whitespace-nowrap px-4 py-3 text-sm text-slate-700">
@@ -379,7 +370,9 @@ function formatCurrency(value) {
     const safe = Number.isFinite(Number(value)) ? Number(value) : 0;
     return new Intl.NumberFormat(undefined, {
         style: "currency",
-        currency: "USD",
+        currency: "THB",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
     }).format(safe);
 }
 
@@ -387,7 +380,42 @@ function formatDate(value) {
     if (!value) return "";
     const d = new Date(value);
     if (Number.isNaN(d.getTime())) return "";
-    return d.toLocaleDateString();
+    const dd = String(d.getDate()).padStart(2, "0");
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const yyyy = String(d.getFullYear());
+    return `${dd}/${mm}/${yyyy}`;
+}
+
+function statusUi(status) {
+    const normalized = status === "active" ? "in_progress" : status === "inactive" ? "done" : status;
+
+    switch (normalized) {
+        case "received":
+            return {
+                label: "Received",
+                class: "bg-slate-100 text-slate-700 ring-1 ring-inset ring-slate-200",
+            };
+        case "in_progress":
+            return {
+                label: "In progress",
+                class: "bg-indigo-50 text-indigo-700 ring-1 ring-inset ring-indigo-200",
+            };
+        case "problem":
+            return {
+                label: "Problem",
+                class: "bg-red-50 text-red-700 ring-1 ring-inset ring-red-200",
+            };
+        case "done":
+            return {
+                label: "Done",
+                class: "bg-green-50 text-green-700 ring-1 ring-inset ring-green-200",
+            };
+        default:
+            return {
+                label: "Received",
+                class: "bg-slate-100 text-slate-700 ring-1 ring-inset ring-slate-200",
+            };
+    }
 }
 
 function normalizeProductsResponse(data) {

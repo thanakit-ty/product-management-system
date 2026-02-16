@@ -32,15 +32,18 @@ const ProductSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
-    stock: {
-      type: Number,
-      required: true,
-      min: 0,
+    startDate: {
+      type: Date,
+      default: null,
+    },
+    dueDate: {
+      type: Date,
+      default: null,
     },
     status: {
       type: String,
-      enum: ["active", "inactive"],
-      default: "active",
+      enum: ["received", "in_progress", "problem", "done"],
+      default: "received",
     },
   },
   { timestamps: true }

@@ -4,8 +4,8 @@
       <!-- Header -->
       <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 class="text-2xl font-semibold tracking-tight text-slate-900">Add Product</h2>
-          <p class="mt-1 text-sm text-slate-600">Create a new product in your catalog</p>
+          <h2 class="text-2xl font-semibold tracking-tight text-slate-900">Add Web Application</h2>
+          <p class="mt-1 text-sm text-slate-600">Create a new contracted web application job</p>
         </div>
 
         <div class="flex items-center gap-2">
@@ -38,13 +38,13 @@
 
           <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
             <div class="md:col-span-6">
-              <label class="block text-xs font-semibold text-slate-700">Name <span class="text-red-600">*</span></label>
+              <label class="block text-xs font-semibold text-slate-700">Web App Name <span class="text-red-600">*</span></label>
               <input
                 v-model.trim="form.name"
                 type="text"
                 class="mt-1 w-full rounded-lg border px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2"
                 :class="inputClass(errors.name)"
-                placeholder="e.g. Wireless Mouse"
+                placeholder="e.g. Company Website"
                 :disabled="isSubmitting"
                 autocomplete="off"
               />
@@ -52,13 +52,13 @@
             </div>
 
             <div class="md:col-span-6">
-              <label class="block text-xs font-semibold text-slate-700">SKU <span class="text-red-600">*</span></label>
+              <label class="block text-xs font-semibold text-slate-700">Contract / Project Code <span class="text-red-600">*</span></label>
               <input
                 v-model.trim="form.sku"
                 type="text"
                 class="mt-1 w-full rounded-lg border px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2"
                 :class="inputClass(errors.sku)"
-                placeholder="e.g. WM-100"
+                placeholder="e.g. WA-2026-001"
                 :disabled="isSubmitting"
                 autocomplete="off"
               />
@@ -66,13 +66,13 @@
             </div>
 
             <div class="md:col-span-6">
-              <label class="block text-xs font-semibold text-slate-700">Category <span class="text-red-600">*</span></label>
+              <label class="block text-xs font-semibold text-slate-700">Client <span class="text-red-600">*</span></label>
               <input
                 v-model.trim="form.category"
                 type="text"
                 class="mt-1 w-full rounded-lg border px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2"
                 :class="inputClass(errors.category)"
-                placeholder="e.g. Accessories"
+                placeholder="e.g. ACME Co., Ltd."
                 :disabled="isSubmitting"
                 autocomplete="off"
               />
@@ -80,20 +80,22 @@
             </div>
 
             <div class="md:col-span-6">
-              <label class="block text-xs font-semibold text-slate-700">Status</label>
+              <label class="block text-xs font-semibold text-slate-700">Logistics Status</label>
               <select
                 v-model="form.status"
                 class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
                 :disabled="isSubmitting"
               >
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
+                <option value="received">Received (รับแล้ว)</option>
+                <option value="in_progress">In progress (กำลังทำ)</option>
+                <option value="problem">Problem (มีปัญหา)</option>
+                <option value="done">Done (เสร็จ)</option>
               </select>
               <p v-if="errors.status" class="mt-1 text-xs text-red-600">{{ errors.status }}</p>
             </div>
 
             <div class="md:col-span-6">
-              <label class="block text-xs font-semibold text-slate-700">Price <span class="text-red-600">*</span></label>
+              <label class="block text-xs font-semibold text-slate-700">Contract Value <span class="text-red-600">*</span></label>
               <input
                 v-model="form.price"
                 type="number"
@@ -109,18 +111,31 @@
             </div>
 
             <div class="md:col-span-6">
-              <label class="block text-xs font-semibold text-slate-700">Stock <span class="text-red-600">*</span></label>
+              <label class="block text-xs font-semibold text-slate-700">Start Date</label>
               <input
-                v-model="form.stock"
-                type="number"
-                min="0"
-                step="1"
+                v-model="form.startDate"
+                type="text"
                 class="mt-1 w-full rounded-lg border px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2"
-                :class="inputClass(errors.stock)"
-                placeholder="0"
+                :class="inputClass(errors.startDate)"
+                placeholder="dd/mm/yyyy"
                 :disabled="isSubmitting"
+                autocomplete="off"
               />
-              <p v-if="errors.stock" class="mt-1 text-xs text-red-600">{{ errors.stock }}</p>
+              <p v-if="errors.startDate" class="mt-1 text-xs text-red-600">{{ errors.startDate }}</p>
+            </div>
+
+            <div class="md:col-span-6">
+              <label class="block text-xs font-semibold text-slate-700">Due Date</label>
+              <input
+                v-model="form.dueDate"
+                type="text"
+                class="mt-1 w-full rounded-lg border px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2"
+                :class="inputClass(errors.dueDate)"
+                placeholder="dd/mm/yyyy"
+                :disabled="isSubmitting"
+                autocomplete="off"
+              />
+              <p v-if="errors.dueDate" class="mt-1 text-xs text-red-600">{{ errors.dueDate }}</p>
             </div>
 
             <div class="md:col-span-12">
@@ -180,8 +195,9 @@ const form = reactive({
   category: "",
   description: "",
   price: "0",
-  stock: "0",
-  status: "active",
+  startDate: "",
+  dueDate: "",
+  status: "received",
 });
 
 const errors = reactive({
@@ -190,7 +206,8 @@ const errors = reactive({
   category: "",
   description: "",
   price: "",
-  stock: "",
+  startDate: "",
+  dueDate: "",
   status: "",
 });
 
@@ -198,8 +215,37 @@ const errors = reactive({
 const pricePreview = computed(() => {
   const n = Number(form.price);
   const safe = Number.isFinite(n) ? n : 0;
-  return new Intl.NumberFormat(undefined, { style: "currency", currency: "USD" }).format(safe);
+  return new Intl.NumberFormat("th-TH", {
+    style: "currency",
+    currency: "THB",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(safe);
 });
+
+function parseDmyToIso(value) {
+  const raw = typeof value === "string" ? value.trim() : "";
+  if (!raw) return { ok: true, iso: null };
+
+  const m = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (!m) return { ok: false, iso: null };
+
+  const day = Number(m[1]);
+  const month = Number(m[2]);
+  const year = Number(m[3]);
+
+  if (!Number.isInteger(day) || !Number.isInteger(month) || !Number.isInteger(year)) return { ok: false, iso: null };
+  if (year < 1900 || year > 3000) return { ok: false, iso: null };
+  if (month < 1 || month > 12) return { ok: false, iso: null };
+  if (day < 1 || day > 31) return { ok: false, iso: null };
+
+  const d = new Date(year, month - 1, day);
+  if (Number.isNaN(d.getTime())) return { ok: false, iso: null };
+  if (d.getFullYear() !== year || d.getMonth() !== month - 1 || d.getDate() !== day) return { ok: false, iso: null };
+
+  const iso = `${String(year).padStart(4, "0")}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  return { ok: true, iso };
+}
 
 // Methods
 function inputClass(hasError) {
@@ -219,18 +265,26 @@ function validate() {
 
   if (!form.sku || form.sku.trim().length < 3) errors.sku = "SKU must be at least 3 characters";
 
-  if (!form.category || form.category.trim().length === 0) errors.category = "Category is required";
+  if (!form.category || form.category.trim().length === 0) errors.category = "Client is required";
 
   const priceNum = Number(form.price);
   if (!Number.isFinite(priceNum)) errors.price = "Price is required";
   else if (priceNum < 0) errors.price = "Price must be 0 or greater";
 
-  const stockNum = Number(form.stock);
-  if (!Number.isFinite(stockNum)) errors.stock = "Stock is required";
-  else if (!Number.isInteger(stockNum)) errors.stock = "Stock must be an integer";
-  else if (stockNum < 0) errors.stock = "Stock must be 0 or greater";
+  const startParsed = parseDmyToIso(form.startDate);
+  if (!startParsed.ok) errors.startDate = "Start date must be dd/mm/yyyy";
 
-  if (form.status !== "active" && form.status !== "inactive") errors.status = "Status must be active or inactive";
+  const dueParsed = parseDmyToIso(form.dueDate);
+  if (!dueParsed.ok) errors.dueDate = "Due date must be dd/mm/yyyy";
+
+  if (
+    form.status !== "received" &&
+    form.status !== "in_progress" &&
+    form.status !== "problem" &&
+    form.status !== "done"
+  ) {
+    errors.status = "Status must be received, in_progress, problem, or done";
+  }
 
   if (form.description && form.description.length > 500) errors.description = "Description must be 500 characters or less";
 
@@ -250,13 +304,23 @@ async function onSubmit() {
   isSubmitting.value = true;
 
   try {
+    const startParsed = parseDmyToIso(form.startDate);
+    const dueParsed = parseDmyToIso(form.dueDate);
+
+    if (!startParsed.ok || !dueParsed.ok) {
+      if (!startParsed.ok) errors.startDate = "Start date must be dd/mm/yyyy";
+      if (!dueParsed.ok) errors.dueDate = "Due date must be dd/mm/yyyy";
+      return;
+    }
+
     const payload = {
       name: form.name.trim(),
       sku: form.sku.trim(),
       category: form.category.trim(),
       description: form.description ? form.description.trim() : "",
       price: Number(form.price),
-      stock: Number(form.stock),
+      startDate: startParsed.iso,
+      dueDate: dueParsed.iso,
       status: form.status,
     };
 
