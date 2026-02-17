@@ -177,7 +177,7 @@
                                         <button
                                             type="button"
                                             class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-200"
-                                            @click="goToEdit(p._id)"
+                                            @click="openEditModal(p)"
                                         >
                                             Edit
                                         </button>
@@ -272,6 +272,167 @@
                 </div>
             </div>
         </div>
+
+        <!-- Edit Product Modal -->
+        <div v-if="editModal.open" class="fixed inset-0 z-50">
+            <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="closeEditModal" />
+
+            <div class="absolute inset-0 flex items-center justify-center p-4">
+                <div class="w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+                    <div class="flex items-start justify-between gap-4 px-6 py-5">
+                        <div>
+                            <h3 class="text-base font-semibold text-slate-900">Edit product</h3>
+                            <p class="mt-1 text-sm text-slate-600">Update the product details and save your changes.</p>
+                        </div>
+                        <button
+                            type="button"
+                            class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-200 disabled:opacity-50"
+                            @click="closeEditModal"
+                            :disabled="editModal.isSaving"
+                            aria-label="Close"
+                            title="Close"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M4.22 4.22a.75.75 0 011.06 0L10 8.94l4.72-4.72a.75.75 0 111.06 1.06L11.06 10l4.72 4.72a.75.75 0 11-1.06 1.06L10 11.06l-4.72 4.72a.75.75 0 11-1.06-1.06L8.94 10 4.22 5.28a.75.75 0 010-1.06z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="max-h-[70vh] overflow-y-auto px-6 pb-6">
+                        <div v-if="editModal.isLoading" class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                            <span class="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-slate-700 align-[-2px]" />
+                            Loading product…
+                        </div>
+
+                        <form class="mt-4 space-y-4" @submit.prevent="confirmEditSave">
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700">Name</label>
+                                    <input
+                                        v-model.trim="editForm.name"
+                                        type="text"
+                                        class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                                        placeholder="Product name"
+                                        autocomplete="off"
+                                        :disabled="editModal.isSaving"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700">SKU</label>
+                                    <input
+                                        v-model.trim="editForm.sku"
+                                        type="text"
+                                        class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                                        placeholder="SKU"
+                                        autocomplete="off"
+                                        :disabled="editModal.isSaving"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700">Client</label>
+                                    <input
+                                        v-model.trim="editForm.category"
+                                        type="text"
+                                        class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                                        placeholder="Client name"
+                                        autocomplete="off"
+                                        :disabled="editModal.isSaving"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700">Price (THB)</label>
+                                    <input
+                                        v-model="editForm.price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                                        placeholder="0"
+                                        :disabled="editModal.isSaving"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700">Status</label>
+                                    <select
+                                        v-model="editForm.status"
+                                        class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                                        :disabled="editModal.isSaving"
+                                    >
+                                        <option value="received">Received</option>
+                                        <option value="in_progress">In progress</option>
+                                        <option value="problem">Problem</option>
+                                        <option value="done">Done</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700">Start date</label>
+                                    <input
+                                        v-model="editForm.startDate"
+                                        type="date"
+                                        class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                                        :disabled="editModal.isSaving"
+                                    />
+                                </div>
+
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-semibold text-slate-700">Due date</label>
+                                    <input
+                                        v-model="editForm.dueDate"
+                                        type="date"
+                                        class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                                        :disabled="editModal.isSaving"
+                                    />
+                                </div>
+
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-semibold text-slate-700">Description</label>
+                                    <textarea
+                                        v-model.trim="editForm.description"
+                                        rows="4"
+                                        class="mt-1 w-full resize-none rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                                        placeholder="Optional notes"
+                                        :disabled="editModal.isSaving"
+                                    />
+                                </div>
+                            </div>
+
+                            <div v-if="editModal.error" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-800">
+                                {{ editModal.error }}
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 border-t border-slate-200 bg-slate-50 px-6 py-4">
+                        <button
+                            type="button"
+                            class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-200 disabled:opacity-50"
+                            @click="closeEditModal"
+                            :disabled="editModal.isSaving"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="button"
+                            class="inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400 disabled:opacity-50"
+                            @click="confirmEditSave"
+                            :disabled="editModal.isSaving || editModal.isLoading"
+                        >
+                            <span v-if="editModal.isSaving" class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white/60 border-t-white" />
+                            Save changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </AppLayout>
 </template>
 
@@ -334,6 +495,25 @@ const deleteModal = reactive({
     error: "",
 });
 
+const editModal = reactive({
+    open: false,
+    productId: "",
+    isLoading: false,
+    isSaving: false,
+    error: "",
+});
+
+const editForm = reactive({
+    name: "",
+    sku: "",
+    category: "",
+    price: "",
+    status: "received",
+    startDate: "",
+    dueDate: "",
+    description: "",
+});
+
 const searchDebounceMs = 500;
 const searchTimer = ref(null);
 
@@ -386,6 +566,16 @@ function formatDate(value) {
     const mm = String(d.getMonth() + 1).padStart(2, "0");
     const yyyy = String(d.getFullYear());
     return `${dd}/${mm}/${yyyy}`;
+}
+
+function toInputDate(value) {
+    if (!value) return "";
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return "";
+    const yyyy = String(d.getFullYear());
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
 }
 
 function statusUi(status) {
@@ -541,6 +731,103 @@ function goToCreate() {
 
 function goToEdit(id) {
     router.push(`/products/${id}`);
+}
+
+function fillEditForm(product) {
+    editForm.name = typeof product?.name === "string" ? product.name : "";
+    editForm.sku = typeof product?.sku === "string" ? product.sku : "";
+    editForm.category = typeof product?.category === "string" ? product.category : "";
+    editForm.price = product?.price ?? "";
+    editForm.status =
+        product?.status === "received" ||
+        product?.status === "in_progress" ||
+        product?.status === "problem" ||
+        product?.status === "done"
+            ? product.status
+            : "received";
+    editForm.startDate = toInputDate(product?.startDate);
+    editForm.dueDate = toInputDate(product?.dueDate);
+    editForm.description = typeof product?.description === "string" ? product.description : "";
+}
+
+async function openEditModal(product) {
+    if (!product?._id) return;
+
+    editModal.open = true;
+    editModal.productId = product._id;
+    editModal.isLoading = true;
+    editModal.isSaving = false;
+    editModal.error = "";
+
+    fillEditForm(product);
+
+    try {
+        const res = await http.get(`/products/${product._id}`);
+        fillEditForm(res.data);
+    } catch (err) {
+        editModal.error = err?.response?.data?.message || err?.message || "Failed to load product";
+    } finally {
+        editModal.isLoading = false;
+    }
+}
+
+function closeEditModal() {
+    if (editModal.isSaving) return;
+    editModal.open = false;
+    editModal.productId = "";
+    editModal.isLoading = false;
+    editModal.error = "";
+}
+
+function validateEditForm() {
+    const name = typeof editForm.name === "string" ? editForm.name.trim() : "";
+    const sku = typeof editForm.sku === "string" ? editForm.sku.trim() : "";
+    const category = typeof editForm.category === "string" ? editForm.category.trim() : "";
+    const priceNum = Number(editForm.price);
+
+    if (!name) return "Name is required";
+    if (name.length < 2) return "Name must be at least 2 characters";
+    if (!sku) return "SKU is required";
+    if (sku.length < 3) return "SKU must be at least 3 characters";
+    if (!category) return "Client is required";
+    if (!Number.isFinite(priceNum)) return "Price is required";
+    if (priceNum < 0) return "Price must be 0 or greater";
+    return "";
+}
+
+async function confirmEditSave() {
+    if (!editModal.productId) return;
+    const validationError = validateEditForm();
+    if (validationError) {
+        editModal.error = validationError;
+        return;
+    }
+
+    editModal.isSaving = true;
+    editModal.error = "";
+
+    try {
+        await http.put(`/products/${editModal.productId}`, {
+            name: editForm.name,
+            sku: editForm.sku,
+            category: editForm.category,
+            price: editForm.price,
+            status: editForm.status,
+            startDate: editForm.startDate || null,
+            dueDate: editForm.dueDate || null,
+            description: editForm.description,
+        });
+
+        editModal.open = false;
+        editModal.productId = "";
+
+        await fetchProducts();
+    } catch (err) {
+        const message = err?.response?.data?.message || err?.message || "Failed to update product";
+        editModal.error = message;
+    } finally {
+        editModal.isSaving = false;
+    }
 }
 
 function openDeleteModal(product) {

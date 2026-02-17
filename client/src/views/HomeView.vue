@@ -35,7 +35,7 @@
             </div>
 
             <!-- KPI cards -->
-            <section aria-label="Logistics status summary">
+            <section aria-label="Status summary">
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
                     <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                         <div class="text-xs font-semibold uppercase tracking-wide text-slate-600">Total Products</div>
