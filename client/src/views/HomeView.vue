@@ -40,30 +40,35 @@
                     <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                         <div class="text-xs font-semibold uppercase tracking-wide text-slate-600">Total Products</div>
                         <div class="mt-2 text-3xl font-semibold text-slate-900">{{ totals.total }}</div>
+                        <div class="mt-1 text-sm font-semibold text-slate-800">{{ formatCurrency(totals.totalValue) }}</div>
                         <div class="mt-1 text-xs text-slate-500">{{ fetchTimeText }}</div>
                     </div>
 
                     <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                         <div class="text-xs font-semibold uppercase tracking-wide text-slate-600">Received (รับแล้ว)</div>
                         <div class="mt-2 text-3xl font-semibold text-slate-900">{{ totals.received }}</div>
+                        <div class="mt-1 text-sm font-semibold text-slate-800">{{ formatCurrency(totals.receivedValue) }}</div>
                         <div class="mt-1 text-xs text-slate-500">{{ fetchTimeText }}</div>
                     </div>
 
                     <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                         <div class="text-xs font-semibold uppercase tracking-wide text-slate-600">In progress (กำลังทำ)</div>
                         <div class="mt-2 text-3xl font-semibold text-slate-900">{{ totals.inProgress }}</div>
+                        <div class="mt-1 text-sm font-semibold text-slate-800">{{ formatCurrency(totals.inProgressValue) }}</div>
                         <div class="mt-1 text-xs text-slate-500">{{ fetchTimeText }}</div>
                     </div>
 
                     <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                         <div class="text-xs font-semibold uppercase tracking-wide text-slate-600">Problem (มีปัญหา)</div>
                         <div class="mt-2 text-3xl font-semibold text-slate-900">{{ totals.problem }}</div>
+                        <div class="mt-1 text-sm font-semibold text-slate-800">{{ formatCurrency(totals.problemValue) }}</div>
                         <div class="mt-1 text-xs text-slate-500">{{ fetchTimeText }}</div>
                     </div>
 
                     <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                         <div class="text-xs font-semibold uppercase tracking-wide text-slate-600">Done (เสร็จ)</div>
                         <div class="mt-2 text-3xl font-semibold text-slate-900">{{ totals.done }}</div>
+                        <div class="mt-1 text-sm font-semibold text-slate-800">{{ formatCurrency(totals.doneValue) }}</div>
                         <div class="mt-1 text-xs text-slate-500">{{ fetchTimeText }}</div>
                     </div>
                 </div>
@@ -102,7 +107,8 @@
                                 <tr>
                                     <th scope="col" class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Name</th>
                                     <th scope="col" class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">SKU</th>
-                                    <th scope="col" class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Category</th>
+                                    <th scope="col" class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Client</th>
+                                    <th scope="col" class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Price</th>
                                     <th scope="col" class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Status</th>
                                     <th scope="col" class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Created</th>
                                     <th scope="col" class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Updated</th>
@@ -113,6 +119,7 @@
                                     <td class="whitespace-nowrap px-5 py-3 text-sm font-semibold text-slate-900">{{ p.name }}</td>
                                     <td class="whitespace-nowrap px-5 py-3 text-sm text-slate-700">{{ p.sku }}</td>
                                     <td class="whitespace-nowrap px-5 py-3 text-sm text-slate-700">{{ p.category }}</td>
+                                    <td class="whitespace-nowrap px-5 py-3 text-sm font-semibold text-slate-900">{{ formatCurrency(p.price) }}</td>
                                     <td class="whitespace-nowrap px-5 py-3 text-sm">
                                         <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold" :class="statusUi(p.status).class">
                                             {{ statusUi(p.status).label }}
@@ -147,14 +154,28 @@ const totals = computed(() => {
         inProgress: 0,
         problem: 0,
         done: 0,
+        totalValue: 0,
+        receivedValue: 0,
+        inProgressValue: 0,
+        problemValue: 0,
+        doneValue: 0,
     };
 
     for (const p of products.value) {
         const s = normalizeStatus(p?.status);
+        const priceNum = Number(p?.price);
+        const value = Number.isFinite(priceNum) ? priceNum : 0;
+
+        acc.totalValue += value;
         if (s === "received") acc.received += 1;
         else if (s === "in_progress") acc.inProgress += 1;
         else if (s === "problem") acc.problem += 1;
         else if (s === "done") acc.done += 1;
+
+        if (s === "received") acc.receivedValue += value;
+        else if (s === "in_progress") acc.inProgressValue += value;
+        else if (s === "problem") acc.problemValue += value;
+        else if (s === "done") acc.doneValue += value;
     }
 
     return acc;
@@ -214,6 +235,16 @@ function formatDateTime(value) {
     const hh = String(d.getHours()).padStart(2, "0");
     const min = String(d.getMinutes()).padStart(2, "0");
     return `${dd}/${mm}/${yyyy} ${hh}:${min}`;
+}
+
+function formatCurrency(value) {
+    const safe = Number.isFinite(Number(value)) ? Number(value) : 0;
+    return new Intl.NumberFormat(undefined, {
+        style: "currency",
+        currency: "THB",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+    }).format(safe);
 }
 
 async function fetchAll() {
