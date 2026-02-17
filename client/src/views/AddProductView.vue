@@ -80,7 +80,7 @@
             </div>
 
             <div class="md:col-span-6">
-              <label class="block text-xs font-semibold text-slate-700">Logistics Status</label>
+              <label class="block text-xs font-semibold text-slate-700">Status</label>
               <select
                 v-model="form.status"
                 class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
