@@ -45,6 +45,18 @@ Designed with a modern SaaS-style UI and scalable architecture.
 
 ![Register](docs/screenshots/register.png)
 
+### 📊 Dashboard
+![Dashboard](docs/screenshots/dashboard.png)
+
+### 📦 Product List
+![Products](docs/screenshots/products.png)
+
+### 📦 Product Add
+![Products](docs/screenshots/add-product.png)
+
+### 📦 Product Edit
+![Products](docs/screenshots/edit-product.png)
+
 ---
 
 ## 🏗️ Tech Stack
